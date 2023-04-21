@@ -12,9 +12,9 @@ public class Direct {
     private Integer tagBits;
     private Integer lineBits;
     private Integer wordBits;
-    private String[] cahce;
-    private int acertos;
-    private int erros;
+    private String[] cache;
+    private int hits;
+    private int errors;
 
     public Direct(String path) {
         setPath(path);
@@ -35,7 +35,7 @@ public class Direct {
         Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]), cacheConfig[3]);
 
         // Create cache
-        setCahce(new String[convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2]))]);
+        setCache(new String[convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2]))]);
 
         // Values in bits
         setAddressBits(calcAddress(memoryBytes, wordBytes));
@@ -47,24 +47,24 @@ public class Direct {
         readMemory();
     }
 
-    private void direct(String[] info) {
-        Integer line = Integer.parseInt(info[1], 2);
-        if (!(getCahce()[line] != null && getCahce()[line].equals(info[0]))) {
-            getCahce()[line] = info[0];
-            setErros(getErros() + 1);
+    private void direct(String[] partAddress) {
+        Integer line = Integer.parseInt(partAddress[1], 2);
+        if (!(getCache()[line] != null && getCache()[line].equals(partAddress[0]))) {
+            getCache()[line] = partAddress[0];
+            setErrors(getErrors() + 1);
         } else {
-            setAcertos(getAcertos() + 1);
+            setHits(getHits() + 1);
         }
     }
 
     private void readMemory() {
         ArrayList<String> memoryData = FileManager.stringReader(getPath() + "data/others/memory1.txt");
         for (String memory : memoryData) {
-            direct(getInfo(Integer.parseInt(memory)));
+            direct(getPartAddress(Integer.parseInt(memory)));
         }
-        System.out.println("Acertos: " + getAcertos());
-        System.out.println("Erros: " + getErros());
-        System.out.println("Porcentagem: " + (Double.valueOf(getAcertos()) / Double.valueOf(memoryData.size())) * 100);
+        System.out.println("Hits: " + getHits());
+        System.out.println("Errors: " + getErrors());
+        System.out.println("Percentage: " + (Double.valueOf(getHits()) / Double.valueOf(memoryData.size())) * 100);
     }
 
     private Integer convertToBits(Integer space, String unit) {
@@ -103,13 +103,13 @@ public class Direct {
         return addressBits - wordBits2 - lineBits2;
     }
 
-    private String[] getInfo(Integer value) {
-        String[] info = new String[3];
+    private String[] getPartAddress(Integer value) {
+        String[] partAddress = new String[3];
         String addressBinary = Convert.intToBinaryString(value, getAddressBits());
-        info[0] = addressBinary.substring(0, getTagBits()); // Tag
-        info[1] = addressBinary.substring(getTagBits(), getLineBits() + getTagBits()); // Line
-        info[2] = addressBinary.substring(getLineBits() + getTagBits(), getAddressBits()); // Word
-        return info;
+        partAddress[0] = addressBinary.substring(0, getTagBits()); // Tag
+        partAddress[1] = addressBinary.substring(getTagBits(), getLineBits() + getTagBits()); // Line
+        partAddress[2] = addressBinary.substring(getLineBits() + getTagBits(), getAddressBits()); // Word
+        return partAddress;
     }
 
     // Gets and Sets
@@ -153,27 +153,27 @@ public class Direct {
         this.wordBits = wordBits;
     }
 
-    public String[] getCahce() {
-        return cahce;
+    public String[] getCache() {
+        return cache;
     }
 
-    public void setCahce(String[] cahce) {
-        this.cahce = cahce;
+    public void setCache(String[] cache) {
+        this.cache = cache;
     }
 
-    public int getAcertos() {
-        return acertos;
+    public int getHits() {
+        return hits;
     }
 
-    public void setAcertos(int acertos) {
-        this.acertos = acertos;
+    public void setHits(int hits) {
+        this.hits = hits;
     }
 
-    public int getErros() {
-        return erros;
+    public int getErrors() {
+        return errors;
     }
 
-    public void setErros(int erros) {
-        this.erros = erros;
+    public void setErrors(int errors) {
+        this.errors = errors;
     }
 }
