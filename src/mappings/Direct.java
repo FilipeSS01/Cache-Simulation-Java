@@ -6,6 +6,7 @@ import utils.Convert;
 import utils.FileManager;
 
 public class Direct extends Mappings {
+    private String[] cache;
 
     public Direct(String path) {
         super(path);
@@ -32,7 +33,7 @@ public class Direct extends Mappings {
         setAddressBits(calcAddress(memoryBytes, wordBytes));
         setWordBits(calcWord(wordBytes));
         setLineBits(calcLine(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
-        setTagBits(calcTag(addressBits, wordBits, lineBits));
+        setTagBits(calcTag(getAddressBits(), getWordBits(), getLineBits()));
 
         // Read memory
         readMemory();
@@ -57,5 +58,15 @@ public class Direct extends Mappings {
         partAddress[1] = addressBinary.substring(getTagBits(), getLineBits() + getTagBits()); // Line
         partAddress[2] = addressBinary.substring(getLineBits() + getTagBits(), getAddressBits()); // Word
         return partAddress;
+    }
+
+    // Gets and Sets
+    
+    public String[] getCache() {
+        return cache;
+    }
+
+    private void setCache(String[] cache) {
+        this.cache = cache;
     }
 }

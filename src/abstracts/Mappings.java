@@ -9,7 +9,6 @@ public abstract class Mappings {
     protected Integer tagBits;
     protected Integer lineBits;
     protected Integer wordBits;
-    protected String[] cache;
     protected int hits;
     protected int errors;
 
@@ -21,7 +20,7 @@ public abstract class Mappings {
     protected abstract void initialize();
 
     protected abstract void mapping(String[] partAddress);
-    
+
     protected abstract String[] getPartAddress(Integer value);
 
     protected void readMemory() {
@@ -109,14 +108,6 @@ public abstract class Mappings {
 
     protected void setWordBits(Integer wordBits) {
         this.wordBits = wordBits;
-    }
-
-    public String[] getCache() {
-        return cache;
-    }
-
-    protected void setCache(String[] cache) {
-        this.cache = cache;
     }
 
     public int getHits() {
