@@ -11,10 +11,12 @@ import utils.FileManager;
 
 public class Associative extends Mappings {
 
+    private Integer replace;
     private Map<Integer, String> cache;
 
-    public Associative(String path) {
+    public Associative(String path, Integer replace) {
         super(path);
+        setReplace(replace);
     }
 
     @Override
@@ -23,12 +25,17 @@ public class Associative extends Mappings {
         ArrayList<String> dadosConfig = FileManager.stringReader(getPath() + "data/config/config.txt");
         String[] memoryConfig = dadosConfig.get(0).split("[ #@_\\/.*;]");
         String[] wordConfig = dadosConfig.get(1).split("[ #@_\\/.*;]");
+        String[] cacheConfig = dadosConfig.get(2).split("[ #@_\\/.*;]");
+        String[] lineConfig = dadosConfig.get(3).split("[ #@_\\/.*;]");
 
         // Value in Bytes
         Integer memoryBytes = convertToBits(Integer.parseInt(memoryConfig[2]), memoryConfig[3]);
         Integer wordBytes = convertToBits(Integer.parseInt(wordConfig[2]), wordConfig[3]);
+        Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]), cacheConfig[3]);
 
+        // Cache
         setCache(new HashMap<Integer, String>());
+        setLimitCache(convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
 
         // Values in bits
         setAddressBits(calcAddress(memoryBytes, wordBytes));
@@ -43,13 +50,16 @@ public class Associative extends Mappings {
     @Override
     protected void mapping(String[] partAddress) {
         Integer tag = Integer.parseInt(partAddress[0], 2);
-        if (getCache().containsKey(tag)) {
-            Replacement.random(getCache(), tag);
-            setHits(getHits() + 1);
-        } else {
+        if (!getCache().containsKey(tag)) {
             setMiss(getMiss() + 1);
+            if (!(getCache().size() < getLimitCache())) {
+                // Replacement
+                Replacement.fifo(cache);
+            }
+            getCache().put(tag, partAddress[1]);
+        } else {
+            setHits(getHits() + 1);
         }
-        getCache().put(tag, partAddress[1]);
     }
 
     @Override
@@ -62,6 +72,14 @@ public class Associative extends Mappings {
     }
 
     // Gets and Sets
+    public Integer getReplace() {
+        return replace;
+    }
+
+    public void setReplace(Integer replace) {
+        this.replace = replace;
+    }
+
     public Map<Integer, String> getCache() {
         return cache;
     }
