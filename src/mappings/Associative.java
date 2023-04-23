@@ -22,14 +22,10 @@ public class Associative extends Mappings {
         ArrayList<String> dadosConfig = FileManager.stringReader(getPath() + "data/config/config.txt");
         String[] memoryConfig = dadosConfig.get(0).split("[ #@_\\/.*;]");
         String[] wordConfig = dadosConfig.get(1).split("[ #@_\\/.*;]");
-        // String[] cacheConfig = dadosConfig.get(2).split("[ #@_\\/.*;]");
-        // String[] lineConfig = dadosConfig.get(3).split("[ #@_\\/.*;]");
 
         // Value in Bytes
         Integer memoryBytes = convertToBits(Integer.parseInt(memoryConfig[2]), memoryConfig[3]);
         Integer wordBytes = convertToBits(Integer.parseInt(wordConfig[2]), wordConfig[3]);
-        // Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]),
-        // cacheConfig[3]);
 
         setCache(new HashMap<Integer, String>());
 
