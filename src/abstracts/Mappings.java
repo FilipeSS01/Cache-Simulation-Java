@@ -9,6 +9,7 @@ public abstract class Mappings {
     protected Integer tagBits;
     protected Integer lineBits;
     protected Integer wordBits;
+    protected Integer limitCache;
     protected int hits;
     protected int miss;
 
@@ -108,6 +109,14 @@ public abstract class Mappings {
 
     protected void setWordBits(Integer wordBits) {
         this.wordBits = wordBits;
+    }
+
+    public Integer getLimitCache() {
+        return limitCache;
+    }
+
+    public void setLimitCache(Integer limitCache) {
+        this.limitCache = limitCache;
     }
 
     public int getHits() {

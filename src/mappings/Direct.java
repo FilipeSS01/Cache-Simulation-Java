@@ -27,7 +27,8 @@ public class Direct extends Mappings {
         Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]), cacheConfig[3]);
 
         // Create cache
-        setCache(new String[convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2]))]);
+        setLimitCache(convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
+        setCache(new String[getLimitCache()]);
 
         // Values in bits
         setAddressBits(calcAddress(memoryBytes, wordBytes));
@@ -42,11 +43,13 @@ public class Direct extends Mappings {
     @Override
     protected void mapping(String[] partAddress) {
         Integer line = Integer.parseInt(partAddress[1], 2);
-        if (!(getCache()[line] != null && getCache()[line].equals(partAddress[0]))) {
-            getCache()[line] = partAddress[0];
-            setMiss(getMiss() + 1);
-        } else {
-            setHits(getHits() + 1);
+        if (line < getLimitCache()) {
+            if (!(getCache()[line] != null && getCache()[line].equals(partAddress[0]))) {
+                setMiss(getMiss() + 1);
+                getCache()[line] = partAddress[0];
+            } else {
+                setHits(getHits() + 1);
+            }
         }
     }
 
@@ -61,7 +64,7 @@ public class Direct extends Mappings {
     }
 
     // Gets and Sets
-    
+
     public String[] getCache() {
         return cache;
     }
@@ -69,4 +72,5 @@ public class Direct extends Mappings {
     private void setCache(String[] cache) {
         this.cache = cache;
     }
+
 }
