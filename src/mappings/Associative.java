@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import abstracts.Mappings;
+import replacement.Replacement;
 import utils.Convert;
 import utils.FileManager;
 
@@ -42,12 +43,13 @@ public class Associative extends Mappings {
     @Override
     protected void mapping(String[] partAddress) {
         Integer tag = Integer.parseInt(partAddress[0], 2);
-        if (!getCache().containsKey(tag)) {
-            getCache().put(tag, partAddress[1]);
-            setErrors(getErrors() + 1);
-        } else {
+        if (getCache().containsKey(tag)) {
+            Replacement.random(getCache(), tag);
             setHits(getHits() + 1);
+        } else {
+            setMiss(getMiss() + 1);
         }
+        getCache().put(tag, partAddress[1]);
     }
 
     @Override
