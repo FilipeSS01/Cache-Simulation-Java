@@ -10,7 +10,7 @@ public abstract class Mappings {
     protected Integer lineBits;
     protected Integer wordBits;
     protected int hits;
-    protected int errors;
+    protected int miss;
 
     public Mappings(String path) {
         setPath(path);
@@ -29,7 +29,7 @@ public abstract class Mappings {
             mapping(getPartAddress(Integer.parseInt(memory)));
         }
         System.out.println("Hits: " + getHits());
-        System.out.println("Errors: " + getErrors());
+        System.out.println("Miss: " + getMiss());
         System.out.println("Percentage: " + (Double.valueOf(getHits()) / Double.valueOf(memoryData.size())) * 100);
     }
 
@@ -118,11 +118,11 @@ public abstract class Mappings {
         this.hits = hits;
     }
 
-    public int getErrors() {
-        return errors;
+    public int getMiss() {
+        return miss;
     }
 
-    protected void setErrors(int errors) {
-        this.errors = errors;
+    protected void setMiss(int miss) {
+        this.miss = miss;
     }
 }

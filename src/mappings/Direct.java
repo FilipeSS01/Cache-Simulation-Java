@@ -44,7 +44,7 @@ public class Direct extends Mappings {
         Integer line = Integer.parseInt(partAddress[1], 2);
         if (!(getCache()[line] != null && getCache()[line].equals(partAddress[0]))) {
             getCache()[line] = partAddress[0];
-            setErrors(getErrors() + 1);
+            setMiss(getMiss() + 1);
         } else {
             setHits(getHits() + 1);
         }
