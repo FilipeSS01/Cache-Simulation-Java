@@ -1,41 +1,54 @@
 package abstracts;
 
 import java.util.ArrayList;
-import utils.FileManager;
 
 public abstract class Mappings {
-    protected String path;
-    protected Integer addressBits;
-    protected Integer tagBits;
+    protected ArrayList<String> dataConfig;
+    protected ArrayList<String> memoryData;
+    protected Long addressBits;
+    protected Long tagBits;
     protected Integer lineBits;
     protected Integer wordBits;
-    protected Integer limitCache;
+    protected Long limitCache;
+    protected Integer replace;
     protected int hits;
     protected int miss;
 
-    public Mappings(String path) {
-        setPath(path);
+    public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig) {
+        setDataConfig(dataConfig);
+        setMemoryData(memoryData);
         initialize();
+        showResult();
+    }
+
+    public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig, Integer replace) {
+        setDataConfig(dataConfig);
+        setMemoryData(memoryData);
+        setReplace(replace);
+        initialize();
+        showResult();
     }
 
     protected abstract void initialize();
 
     protected abstract void mapping(String[] partAddress);
 
-    protected abstract String[] getPartAddress(Integer value);
+    protected abstract String[] getPartAddress(Long value);
 
     protected void readMemory() {
-        ArrayList<String> memoryData = FileManager.stringReader(getPath() + "data/others/memory1.txt");
-        for (String memory : memoryData) {
-            mapping(getPartAddress(Integer.parseInt(memory)));
+        for (String memory : getMemoryData()) {
+            mapping(getPartAddress(Long.parseLong(memory)));
         }
-        System.out.println("Hits: " + getHits());
-        System.out.println("Miss: " + getMiss());
-        System.out.println("Percentage: " + (Double.valueOf(getHits()) / Double.valueOf(memoryData.size())) * 100);
     }
 
-    protected Integer convertToBits(Integer space, String unit) {
-        Integer bits = space;
+    protected void showResult() {
+        System.out.println("Hits: " + getHits());
+        System.out.println("Miss: " + getMiss());
+        System.out.println(
+                "Percentage: " + (Double.valueOf(getHits()) / Double.valueOf(getMemoryData().size())) * 100 + " %\n");
+    }
+
+    protected Long convertToBits(Long bits, String unit) {
         switch (unit) {
             case "KB":
                 bits = bits * 1024;
@@ -50,48 +63,56 @@ public abstract class Mappings {
         return bits;
     }
 
-    protected Integer convertLineToDecimalBits(Integer cacheBytes, Integer wordBytes, Integer lineConfig) {
+    protected Long convertLineToDecimalBits(Long cacheBytes, Long wordBytes, Integer lineConfig) {
         return (cacheBytes / wordBytes) / lineConfig;
     }
 
-    protected Integer calcAddress(Integer memoryBytes, Integer wordBits) {
-        return Integer.parseInt("" + Math.round(Math.log(memoryBytes / wordBits) / Math.log(2)));
+    protected Long calcAddress(Long memoryBytes, Long wordBits) {
+        return Math.round(Math.log(memoryBytes / wordBits) / Math.log(2));
     }
 
-    protected Integer calcLine(Integer cacheBytes, Integer wordBytes, Integer lineConfig) {
-        return Integer.parseInt("" + Math.round(Math.log((cacheBytes / wordBytes) / lineConfig) / Math.log(2)));
+    protected Integer calcLine(Long cacheBytes, Long wordBytes, Integer lineConfig) {
+        return (int) Math.round(Math.log((cacheBytes / wordBytes) / lineConfig) / Math.log(2));
     }
 
-    protected Integer calcWord(Integer word) {
-        return Integer.parseInt("" + Math.round(Math.log(word) / Math.log(2)));
+    protected Integer calcWord(Long word) {
+        return (int) Math.round(Math.log(word) / Math.log(2));
     }
 
-    protected Integer calcTag(Integer addressBits, Integer wordBits2, Integer lineBits2) {
+    protected Long calcTag(Long addressBits, Integer wordBits2, Integer lineBits2) {
         return addressBits - wordBits2 - lineBits2;
     }
 
     // Gets and Sets
-    public String getPath() {
-        return path;
+    public ArrayList<String> getMemoryData() {
+        return memoryData;
     }
 
-    protected void setPath(String path) {
-        this.path = path;
+    public void setMemoryData(ArrayList<String> memoryData) {
+        this.memoryData = memoryData;
     }
 
-    public Integer getAddressBits() {
+    public ArrayList<String> getDataConfig() {
+        return dataConfig;
+    }
+
+    public void setDataConfig(ArrayList<String> dataConfig) {
+        this.dataConfig = dataConfig;
+    }
+
+    public Long getAddressBits() {
         return addressBits;
     }
 
-    protected void setAddressBits(Integer addressBits) {
+    protected void setAddressBits(Long addressBits) {
         this.addressBits = addressBits;
     }
 
-    public Integer getTagBits() {
+    public Long getTagBits() {
         return tagBits;
     }
 
-    protected void setTagBits(Integer tagBits) {
+    protected void setTagBits(Long tagBits) {
         this.tagBits = tagBits;
     }
 
@@ -111,12 +132,20 @@ public abstract class Mappings {
         this.wordBits = wordBits;
     }
 
-    public Integer getLimitCache() {
+    public Long getLimitCache() {
         return limitCache;
     }
 
-    public void setLimitCache(Integer limitCache) {
+    protected void setLimitCache(Long limitCache) {
         this.limitCache = limitCache;
+    }
+
+    public Integer getReplace() {
+        return replace;
+    }
+
+    protected void setReplace(Integer replace) {
+        this.replace = replace;
     }
 
     public int getHits() {
