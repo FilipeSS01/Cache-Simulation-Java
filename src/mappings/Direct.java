@@ -3,32 +3,30 @@ package mappings;
 import java.util.ArrayList;
 import abstracts.Mappings;
 import utils.Convert;
-import utils.FileManager;
 
 public class Direct extends Mappings {
     private String[] cache;
 
-    public Direct(String path) {
-        super(path);
+    public Direct(ArrayList<String> memoryData, ArrayList<String> dataConfig) {
+        super(memoryData, dataConfig);
     }
 
     @Override
     public void initialize() {
-        // Read config
-        ArrayList<String> dadosConfig = FileManager.stringReader(getPath() + "data/config/config.txt");
-        String[] memoryConfig = dadosConfig.get(0).split("[ #@_\\/.*;]");
-        String[] wordConfig = dadosConfig.get(1).split("[ #@_\\/.*;]");
-        String[] cacheConfig = dadosConfig.get(2).split("[ #@_\\/.*;]");
-        String[] lineConfig = dadosConfig.get(3).split("[ #@_\\/.*;]");
+        // Get config
+        String[] memoryConfig = getDataConfig().get(0).split("[ #@_\\/.*;]");
+        String[] wordConfig = getDataConfig().get(1).split("[ #@_\\/.*;]");
+        String[] cacheConfig = getDataConfig().get(2).split("[ #@_\\/.*;]");
+        String[] lineConfig = getDataConfig().get(3).split("[ #@_\\/.*;]");
 
         // Value in Bytes
-        Integer memoryBytes = convertToBits(Integer.parseInt(memoryConfig[2]), memoryConfig[3]);
-        Integer wordBytes = convertToBits(Integer.parseInt(wordConfig[2]), wordConfig[3]);
-        Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]), cacheConfig[3]);
+        Long memoryBytes = convertToBits(Long.parseLong(memoryConfig[2]), memoryConfig[3]);
+        Long wordBytes = convertToBits(Long.parseLong(wordConfig[2]), wordConfig[3]);
+        Long cacheBytes = convertToBits(Long.parseLong(cacheConfig[2]), cacheConfig[3]);
 
         // Create cache
         setLimitCache(convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
-        setCache(new String[getLimitCache()]);
+        setCache(new String[getLimitCache().intValue()]);
 
         // Values in bits
         setAddressBits(calcAddress(memoryBytes, wordBytes));
@@ -54,12 +52,12 @@ public class Direct extends Mappings {
     }
 
     @Override
-    protected String[] getPartAddress(Integer value) {
+    protected String[] getPartAddress(Long value) {
         String[] partAddress = new String[3];
         String addressBinary = Convert.intToBinaryString(value, getAddressBits());
-        partAddress[0] = addressBinary.substring(0, getTagBits()); // Tag
-        partAddress[1] = addressBinary.substring(getTagBits(), getLineBits() + getTagBits()); // Line
-        partAddress[2] = addressBinary.substring(getLineBits() + getTagBits(), getAddressBits()); // Word
+        partAddress[0] = addressBinary.substring(0, getTagBits().intValue()); // Tag
+        partAddress[1] = addressBinary.substring(getTagBits().intValue(), getLineBits() + getTagBits().intValue()); // Line
+        partAddress[2] = addressBinary.substring(getLineBits() + getTagBits().intValue(), getAddressBits().intValue()); // Word
         return partAddress;
     }
 
