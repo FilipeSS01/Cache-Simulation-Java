@@ -7,35 +7,36 @@ import java.util.Map;
 import abstracts.Mappings;
 import replacement.Replacement;
 import utils.Convert;
-import utils.FileManager;
 
 public class Associative extends Mappings {
-
-    private Integer replace;
     private Map<Integer, String> cache;
+    private Map<Integer, Integer> auxCache;
+    private ArrayList<Integer> listAuxCache;
 
-    public Associative(String path, Integer replace) {
-        super(path);
-        setReplace(replace);
+    public Associative(ArrayList<String> memoryData, ArrayList<String> dataConfig, Integer replace) {
+        super(memoryData, dataConfig, replace);
     }
 
     @Override
     protected void initialize() {
-        // Read config
-        ArrayList<String> dadosConfig = FileManager.stringReader(getPath() + "data/config/config.txt");
-        String[] memoryConfig = dadosConfig.get(0).split("[ #@_\\/.*;]");
-        String[] wordConfig = dadosConfig.get(1).split("[ #@_\\/.*;]");
-        String[] cacheConfig = dadosConfig.get(2).split("[ #@_\\/.*;]");
-        String[] lineConfig = dadosConfig.get(3).split("[ #@_\\/.*;]");
+        // Get config
+        String[] memoryConfig = getDataConfig().get(0).split("[ #@_\\/.*;]");
+        String[] wordConfig = getDataConfig().get(1).split("[ #@_\\/.*;]");
+        String[] cacheConfig = getDataConfig().get(2).split("[ #@_\\/.*;]");
+        String[] lineConfig = getDataConfig().get(3).split("[ #@_\\/.*;]");
 
         // Value in Bytes
-        Integer memoryBytes = convertToBits(Integer.parseInt(memoryConfig[2]), memoryConfig[3]);
-        Integer wordBytes = convertToBits(Integer.parseInt(wordConfig[2]), wordConfig[3]);
-        Integer cacheBytes = convertToBits(Integer.parseInt(cacheConfig[2]), cacheConfig[3]);
+        Long memoryBytes = convertToBits(Long.parseLong(memoryConfig[2]), memoryConfig[3]);
+        Long wordBytes = convertToBits(Long.parseLong(wordConfig[2]), wordConfig[3]);
+        Long cacheBytes = convertToBits(Long.parseLong(cacheConfig[2]), cacheConfig[3]);
 
-        // Cache
+        // Create cache
         setCache(new HashMap<Integer, String>());
         setLimitCache(convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
+
+        // Aux caches
+        setAuxCache(new HashMap<Integer, Integer>());
+        setListAuxCache(new ArrayList<Integer>());
 
         // Values in bits
         setAddressBits(calcAddress(memoryBytes, wordBytes));
@@ -54,32 +55,47 @@ public class Associative extends Mappings {
             setMiss(getMiss() + 1);
             if (!(getCache().size() < getLimitCache())) {
                 // Replacement
-                Replacement.fifo(cache);
+                switch (getReplace()) {
+                    case 1:
+                        Replacement.lfu(getCache(), getAuxCache());
+                        break;
+                    case 2:
+                        Replacement.fifo(getCache());
+                        break;
+                    case 3:
+                        Replacement.lru(getCache(), getListAuxCache());
+                        break;
+                    case 4:
+                        Replacement.random(getCache());
+                        break;
+                }
             }
             getCache().put(tag, partAddress[1]);
+            if (getReplace() == 1)
+                getAuxCache().put(tag, 0);
+            else if (getReplace() == 3)
+                getListAuxCache().add(tag);
         } else {
             setHits(getHits() + 1);
+            if (getReplace() == 1)
+                getAuxCache().replace(tag, getAuxCache().get(tag) + 1);
+            else if (getReplace() == 3) {
+                getListAuxCache().remove(getListAuxCache().indexOf(tag));
+                getListAuxCache().add(tag);
+            }
         }
     }
 
     @Override
-    protected String[] getPartAddress(Integer value) {
+    protected String[] getPartAddress(Long value) {
         String[] partAddress = new String[2];
         String addressBinary = Convert.intToBinaryString(value, getAddressBits());
-        partAddress[0] = addressBinary.substring(0, getTagBits()); // Tag
-        partAddress[1] = addressBinary.substring(getTagBits(), getAddressBits()); // Word
+        partAddress[0] = addressBinary.substring(0, getTagBits().intValue()); // Tag
+        partAddress[1] = addressBinary.substring(getTagBits().intValue(), getAddressBits().intValue()); // Word
         return partAddress;
     }
 
     // Gets and Sets
-    public Integer getReplace() {
-        return replace;
-    }
-
-    public void setReplace(Integer replace) {
-        this.replace = replace;
-    }
-
     public Map<Integer, String> getCache() {
         return cache;
     }
@@ -88,4 +104,19 @@ public class Associative extends Mappings {
         this.cache = cache;
     }
 
+    public Map<Integer, Integer> getAuxCache() {
+        return auxCache;
+    }
+
+    private void setAuxCache(Map<Integer, Integer> auxCache) {
+        this.auxCache = auxCache;
+    }
+
+    public ArrayList<Integer> getListAuxCache() {
+        return listAuxCache;
+    }
+
+    public void setListAuxCache(ArrayList<Integer> listAuxCache) {
+        this.listAuxCache = listAuxCache;
+    }
 }
