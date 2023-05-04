@@ -1,4 +1,4 @@
-mem = 128 KB;
+mem = 4 GB;
 palavra = 4 B;
-cache = 4 KB;
+cache = 2 MB;
 linha = 4 pal;
