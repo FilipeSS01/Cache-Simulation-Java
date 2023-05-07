@@ -75,12 +75,16 @@ public abstract class Mappings {
         return (int) Math.round(Math.log((cacheBytes / wordBytes) / lineConfig) / Math.log(2));
     }
 
+    protected Integer calcLine() {
+        return null;
+    }
+
     protected Integer calcWord(Long word) {
         return (int) Math.round(Math.log(word) / Math.log(2));
     }
 
-    protected Long calcTag(Long addressBits, Integer wordBits2, Integer lineBits2) {
-        return addressBits - wordBits2 - lineBits2;
+    protected Long calcTag(Long addressBits, Integer wordBits, Integer lineBits) {
+        return addressBits - wordBits - lineBits;
     }
 
     // Gets and Sets
