@@ -14,10 +14,19 @@ public class Replacement {
         cache.remove(randomTag);
     }
 
+    public static void random(ArrayList<Integer> arrayList) {
+        Random random = new Random();
+        arrayList.remove(random.nextInt(arrayList.size()));
+    }
+
     public static void fifo(Map<Integer, String> cache) {
         Integer[] tagList = cache.keySet().toArray(new Integer[cache.size()]);
         Integer firstTag = tagList[0];
         cache.remove(firstTag);
+    }
+
+    public static void fifo(ArrayList<Integer> arrayList) {
+        arrayList.remove(0);
     }
 
     public static void lfu(Map<Integer, String> cache, Map<Integer, Integer> auxCache) {
@@ -37,4 +46,16 @@ public class Replacement {
         listAuxCache.remove(0);
         cache.remove(firstTag);
     }
+
+    public static void lru(ArrayList<Integer> arrayList, boolean hit, Integer tag) {
+        if (hit) {
+            int index = arrayList.indexOf(tag);
+            Integer aux = arrayList.get(index);
+            arrayList.remove(index);
+            arrayList.add(aux);
+        }else{
+            arrayList.remove(0);
+        }
+    }
+
 }
