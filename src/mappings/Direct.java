@@ -62,7 +62,6 @@ public class Direct extends Mappings {
     }
 
     // Gets and Sets
-
     public String[] getCache() {
         return cache;
     }
