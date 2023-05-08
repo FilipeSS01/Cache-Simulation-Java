@@ -53,6 +53,13 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
+        btnMemory.setDisable(true);
+        btnDirect.setDisable(true);
+        btnSetAssociative.setDisable(true);
+        btnAssociative.setDisable(true);
+        btnRun.setDisable(true);
+        choiceReplace.setDisable(true);
+
         choiceReplace.getItems().addAll("RANDOM", "FIFO", "LFU", "LRU");
         response = "";
     }
@@ -62,7 +69,10 @@ public class Controller implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Config");
         File file = fileChooser.showOpenDialog(null);
-        setDataConfig(FileManager.stringReader(file.getAbsolutePath()));
+        if (file != null) {
+            setDataConfig(FileManager.stringReader(file.getAbsolutePath()));
+            btnMemory.setDisable(false);
+        }
     }
 
     @FXML
@@ -70,26 +80,35 @@ public class Controller implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Memory");
         File file = fileChooser.showOpenDialog(null);
-        setMemoryData(FileManager.stringReader(file.getAbsolutePath()));
+        if (file != null) {
+            setMemoryData(FileManager.stringReader(file.getAbsolutePath()));
+            btnDirect.setDisable(false);
+            btnSetAssociative.setDisable(false);
+            btnAssociative.setDisable(false);
+        }
     }
 
     @FXML
     void runAssociative(ActionEvent event) {
         setMapping("Associative");
+        toogleBtns(false);
     }
 
     @FXML
     void runSetAssociative(ActionEvent event) {
         setMapping("SetAssociative");
+        toogleBtns(false);
     }
 
     @FXML
     void runDirect(ActionEvent event) {
         setMapping("Direct");
+        btnRun.setDisable(false);
     }
 
     @FXML
     void runMappings(ActionEvent event) {
+        toogleBtns(true);
         switch (getMapping()) {
             case "Direct":
                 setMappings(new Direct(getMemoryData(), getDataConfig()));
@@ -104,6 +123,11 @@ public class Controller implements Initializable {
         setResponse(getMappings().toString());
         txtResponse.setText(getResponse());
         txtResponse.end();
+    }
+
+    private void toogleBtns(boolean flag) {
+        choiceReplace.setDisable(flag);
+        btnRun.setDisable(flag);
     }
 
     // Gets and Sets
