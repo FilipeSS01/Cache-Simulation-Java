@@ -15,17 +15,25 @@ public abstract class Mappings {
     protected int miss;
 
     public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig) {
+        java.util.Date date = new java.util.Date();
+        System.out.println(date);
         setDataConfig(dataConfig);
         setMemoryData(memoryData);
         initialize();
+        date = new java.util.Date();
+        System.out.println(date);
         System.out.println(toString());
     }
 
     public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig, String replace) {
+        java.util.Date date = new java.util.Date();
+        System.out.println(date);
         setDataConfig(dataConfig);
         setMemoryData(memoryData);
         setReplace(replace);
         initialize();
+        date = new java.util.Date();
+        System.out.println(date);
         System.out.println(toString());
     }
 
