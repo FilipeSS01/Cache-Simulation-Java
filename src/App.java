@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import mappings.Associative;
 import mappings.Direct;
@@ -14,10 +12,10 @@ public class App {
         ArrayList<String> dataConfig = FileManager.stringReader(path + "data/config/config.txt");
 
         new Direct(memoryData, dataConfig);
-        new SetAssociative(memoryData, dataConfig, 1);
+        // new SetAssociative(memoryData, dataConfig, 1);
         // new Associative(memoryData, dataConfig, 2);
         // new Associative(memoryData, dataConfig, 3);
-        new Associative(memoryData, dataConfig, 4);
+        // new Associative(memoryData, dataConfig, 4);
     }
 
 }
