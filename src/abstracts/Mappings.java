@@ -10,7 +10,7 @@ public abstract class Mappings {
     protected Integer lineBits;
     protected Integer wordBits;
     protected Long limitCache;
-    protected Integer replace;
+    protected String replace;
     protected int hits;
     protected int miss;
 
@@ -18,15 +18,15 @@ public abstract class Mappings {
         setDataConfig(dataConfig);
         setMemoryData(memoryData);
         initialize();
-        showResult();
+        System.out.println(toString());
     }
 
-    public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig, Integer replace) {
+    public Mappings(ArrayList<String> memoryData, ArrayList<String> dataConfig, String replace) {
         setDataConfig(dataConfig);
         setMemoryData(memoryData);
         setReplace(replace);
         initialize();
-        showResult();
+        System.out.println(toString());
     }
 
     protected abstract void initialize();
@@ -39,13 +39,6 @@ public abstract class Mappings {
         for (String memory : getMemoryData()) {
             mapping(getPartAddress(Long.parseLong(memory)));
         }
-    }
-
-    protected void showResult() {
-        System.out.println("Hits: " + getHits());
-        System.out.println("Miss: " + getMiss());
-        System.out.println(
-                "Percentage: " + (Double.valueOf(getHits()) / Double.valueOf(getMemoryData().size())) * 100 + " %\n");
     }
 
     protected Long convertToBits(Long bits, String unit) {
@@ -85,6 +78,16 @@ public abstract class Mappings {
 
     protected Long calcTag(Long addressBits, Integer wordBits, Integer lineBits) {
         return addressBits - wordBits - lineBits;
+    }
+
+    @Override
+    public String toString() {
+        String replace = (getReplace() == null) ? "" : "Replace: " + getReplace() + "\n";
+        return replace
+                + "Hits: " + getHits()
+                + "\nMiss: " + getMiss()
+                + "\nPercentage: " + (Double.valueOf(getHits()) / Double.valueOf(getMemoryData().size())) * 100 + " %\n"
+                + "============================\n";
     }
 
     // Gets and Sets
@@ -144,11 +147,11 @@ public abstract class Mappings {
         this.limitCache = limitCache;
     }
 
-    public Integer getReplace() {
+    public String getReplace() {
         return replace;
     }
 
-    protected void setReplace(Integer replace) {
+    protected void setReplace(String replace) {
         this.replace = replace;
     }
 
