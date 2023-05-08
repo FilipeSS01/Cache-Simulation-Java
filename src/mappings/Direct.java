@@ -61,6 +61,12 @@ public class Direct extends Mappings {
         return partAddress;
     }
 
+    @Override
+    public String toString() {
+        String mapping = "Mapping: Direct\n";
+        return mapping + super.toString();
+    }
+
     // Gets and Sets
     public String[] getCache() {
         return cache;

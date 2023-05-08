@@ -13,7 +13,7 @@ public class Associative extends Mappings {
     private Map<Integer, Integer> auxCache;
     private ArrayList<Integer> listAuxCache;
 
-    public Associative(ArrayList<String> memoryData, ArrayList<String> dataConfig, Integer replace) {
+    public Associative(ArrayList<String> memoryData, ArrayList<String> dataConfig, String replace) {
         super(memoryData, dataConfig, replace);
     }
 
@@ -56,30 +56,30 @@ public class Associative extends Mappings {
             if (!(getCache().size() < getLimitCache())) {
                 // Replacement
                 switch (getReplace()) {
-                    case 1:
+                    case "LFU":
                         Replacement.lfu(getCache(), getAuxCache());
                         break;
-                    case 2:
+                    case "FIFO":
                         Replacement.fifo(getCache());
                         break;
-                    case 3:
+                    case "LRU":
                         Replacement.lru(getCache(), getListAuxCache());
                         break;
-                    case 4:
+                    case "RANDOM":
                         Replacement.random(getCache());
                         break;
                 }
             }
             getCache().put(tag, partAddress[1]);
-            if (getReplace() == 1)
+            if (getReplace() == "LFU")
                 getAuxCache().put(tag, 0);
-            else if (getReplace() == 3)
+            else if (getReplace() == "LRU")
                 getListAuxCache().add(tag);
         } else {
             setHits(getHits() + 1);
-            if (getReplace() == 1)
+            if (getReplace() == "LFU")
                 getAuxCache().replace(tag, getAuxCache().get(tag) + 1);
-            else if (getReplace() == 3) {
+            else if (getReplace() == "LRU") {
                 getListAuxCache().remove(getListAuxCache().indexOf(tag));
                 getListAuxCache().add(tag);
             }
@@ -93,6 +93,12 @@ public class Associative extends Mappings {
         partAddress[0] = addressBinary.substring(0, getTagBits().intValue()); // Tag
         partAddress[1] = addressBinary.substring(getTagBits().intValue(), getAddressBits().intValue()); // Word
         return partAddress;
+    }
+
+    @Override
+    public String toString() {
+        String mapping = "Mapping: Associative\n";
+        return mapping + super.toString();
     }
 
     // Gets and Sets

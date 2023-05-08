@@ -15,7 +15,7 @@ public class SetAssociative extends Mappings {
     private ArrayList<String> listAuxCache;
     private int blockConfig;
 
-    public SetAssociative(ArrayList<String> memoryData, ArrayList<String> dataConfig, Integer replace) {
+    public SetAssociative(ArrayList<String> memoryData, ArrayList<String> dataConfig, String replace) {
         super(memoryData, dataConfig, replace);
     }
 
@@ -59,17 +59,18 @@ public class SetAssociative extends Mappings {
                 getCache().put(line, new ArrayList<Integer>());
 
             if (getCache().get(line).size() >= getLimitCache() / getBlockConfig()){
+                // Replacement
                 switch (getReplace()) {
-                    case 1:
+                    case "LFU":
                         // Replacement.lfu(getCache(), getAuxCache());
                         break;
-                    case 2:
+                    case "FIFO":
                         Replacement.fifo(getCache().get(line));
                         break;
-                    case 3:
+                    case "LRU":
                         Replacement.lru(getCache().get(line), false, tag);
                         break;
-                    case 4:
+                    case "RANDOM":
                         Replacement.random(getCache().get(line));
                         break;
                 }
@@ -79,9 +80,9 @@ public class SetAssociative extends Mappings {
 
         } else {
             setHits(getHits() + 1);
-            // if (getReplace() == 1)
+            // if (getReplace() == "LFU")
                 // getCache().get(line).replace(tag, getCache().get(line).get(getCache().get(line).indexOf(tag)) + 1);
-            if (getReplace() == 3) {
+            if (getReplace() == "LRU") {
                 Replacement.lru(getCache().get(line), true, tag);
             }
         }
@@ -95,6 +96,12 @@ public class SetAssociative extends Mappings {
         partAddress[1] = addressBinary.substring(getTagBits().intValue(), getLineBits() + getTagBits().intValue()); // Line
         partAddress[2] = addressBinary.substring(getLineBits() + getTagBits().intValue(), getAddressBits().intValue()); // Word
         return partAddress;
+    }
+
+    @Override
+    public String toString() {
+        String mapping = "Mapping: Set Associative\n";
+        return mapping + super.toString();
     }
 
     @Override
