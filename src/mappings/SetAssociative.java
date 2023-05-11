@@ -38,7 +38,7 @@ public class SetAssociative extends Mappings {
         setLimitCache(convertLineToDecimalBits(cacheBytes, wordBytes, Integer.parseInt(lineConfig[2])));
 
         // Values in bits
-        setBlockConfig(Integer.parseInt(blockConfig[2]));
+        setBlockConfig(getLimitCache().intValue()/Integer.parseInt(blockConfig[2]));
         setAddressBits(calcAddress(memoryBytes, wordBytes));
         setWordBits(calcWord(wordBytes));
         setLineBits(calcLine());
